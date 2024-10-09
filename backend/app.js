@@ -3,6 +3,7 @@ const HttpServer = require('./modules/http-server');
 const LocalizationHelper = require("./helpers/localization.helper");
 require('dotenv').config();
 const DAO = require('./modules/dao');
+const QueryValidator = require('./modules/query-validator');
 
 
 class App {
@@ -29,6 +30,16 @@ class App {
         });
 
         app.get('/api/query', (req, res) => {
+            const query = req.queryParams.query;
+            const qv = new QueryValidator(query);
+            qv.assertTable('patient').blockInsert().blockUpdate().blockDrop();
+
+            try {
+                qv.validate();
+            } catch (e) {
+                res.status(403).send(e.message);
+            }
+
             res.send("<p>get req recieved</p>")
         });
 
@@ -43,7 +54,7 @@ class App {
 
     static incrementRequestCount() {
         this.requestCount++;
-    }
+    };
 
     static async loadJsonData(filePath) {
         try {
