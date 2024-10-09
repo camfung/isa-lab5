@@ -29,7 +29,12 @@ class DAO {
                 return;
             }
             console.log('Database connection successful. Connection ID: ' + connection.threadId);
-            const response = await this._createPatientTableIfNotExist();
+
+            try {
+                await this._createPatientTableIfNotExist();
+            } catch (e) {
+                console.error("Error creating table 'patient': " + e.message);
+            }
         });
 
         return connection;
