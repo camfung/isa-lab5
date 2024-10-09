@@ -1,0 +1,14 @@
+{
+    "Messages": {
+        "addedWord": "Added %0 and it's definition to the dictionary",
+        "keyFound": "The definition for \"%0\" is \"%1\""  
+    },
+    "ErrorMessages": {
+        "LocalizationNotFound": "No localization string found for key: %0",
+        "EndpointNotFound": "Endpoint not found",
+        "500": "500 - Internal Server Error",
+        "ErrorWritingFile": "Error writting to file: %0.\n\n%1",
+        "FileNotFound": "404 Not Found - Unable to locate file: %0.\n\n%1",
+        "KeyNotFound": "Warning! \"%0\" does not have an entry in the dictionary." 
+    }
+}
