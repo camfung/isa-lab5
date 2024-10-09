@@ -76,7 +76,7 @@ class HttpServer {
             this._execute_middlewares();
 
             if (route && req.method === route.method) {
-                route.callback(request, response);
+                await route.callback(request, response);
             } else {
                 response.status(404).send(LocalizationHelper.getTranslation('ErrorMessages.EndpointNotFound'));
             }

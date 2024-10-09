@@ -6,6 +6,23 @@ class DAO {
         this.connection = this._connectToServer();
     }
 
+    insert(tableName, data) {
+        if (!Array.isArray(data) || data.length === 0) {
+            throw new Error('Input should be a non-empty array of JSON objects.');
+        }
+
+        const columns = Object.keys(data[0]);
+        const valueSets = this._getInsertValuesFromJson(data);
+
+        const query = `
+            INSERT INTO ${tableName} (${columns.join(', ')})
+            VALUES
+            ${valueSets.join(', ')}
+        `;
+
+        return this.query(query);
+    }
+
     query(sql) {
         return new Promise((resolve, reject) => {
             this.connection.query(sql, (err, results) => {
@@ -51,6 +68,25 @@ class DAO {
 
         return await this.query(createQuery);
     }
+
+    _getInsertValuesFromJson(data) {
+        // Map through each object to format the values
+        const valuesList = data.map(jsonData => {
+            const values = Object.values(jsonData);
+            const formattedValues = values.map(value => {
+                if (value === null) {
+                    return 'NULL'; // Handle null values
+                }
+                if (typeof value === 'string') {
+                    return `'${value.replace(/'/g, "''")}'`; // Escape single quotes in strings
+                }
+                return value; // Leave numbers and other types unchanged
+            });
+            return `(${formattedValues.join(', ')})`; // Wrap the formatted values for this row
+        });
+
+        return valuesList;
+    };
 }
 
 module.exports = DAO;

@@ -1,3 +1,4 @@
+const fs = require('fs').promises;
 const HttpServer = require('./modules/http-server');
 const LocalizationHelper = require("./helpers/localization.helper");
 require('dotenv').config();
@@ -5,35 +6,26 @@ const DAO = require('./modules/dao');
 
 
 class App {
+    static patientDataFilePath = './data/patient-data.json';
+
     static start() {
         const app = new HttpServer();
+        const dao = new DAO();
 
         app.use(this.incrementRequestCount.bind(this));
         app.cors(["http://127.0.0.1:8080"]);
 
-        app.post('/api/insertrecords', (req, res) => {
-            res.json([{
-                parentId: 1,
-                name: "Sara Brown",
-                dateOfBirth: "1901-01-01",
-            },
-            {
-                parentId: 1,
-                name: "John Smith",
-                dateOfBirth: "1941-01-01",
-            },
-            {
-                parentId: 1,
-                name: "Jack Ma",
-                dateOfBirth: "1961-01-30",
-            },
-            {
-                parentId: 1,
-                name: "Elon Musk",
-                dateOfBirth: "1999-01-01",
-            }
+        app.post('/api/insertrecords', async (req, res) => {
+            const data = await this.loadJsonData(this.patientDataFilePath);
 
-            ])
+            try {
+                const queryResult = await dao.insert('patient', data);
+                const response = `Successfully inserted ${queryResult.affectedRows} records.`
+                res.status(201).send(response);
+            } catch (e) {
+                const response = `Insert failed: ${e}`;
+                res.status(500).send(response);
+            }
         });
 
         app.get('/api/query', (req, res) => {
@@ -52,7 +44,16 @@ class App {
     static incrementRequestCount() {
         this.requestCount++;
     }
+
+    static async loadJsonData(filePath) {
+        try {
+            const data = await fs.readFile(filePath, 'utf8');
+            return JSON.parse(data); // Parse the JSON string into an object
+        } catch (error) {
+            console.error('Error reading JSON file:', error);
+            throw error; // Re-throw the error for further handling
+        }
+    };
 }
 
-// App.start();
-const dao = new DAO();
+App.start();
