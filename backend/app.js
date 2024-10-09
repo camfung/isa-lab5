@@ -1,5 +1,7 @@
 const HttpServer = require('./modules/http-server');
 const LocalizationHelper = require("./helpers/localization.helper");
+require('dotenv').config();
+const DAO = require('./modules/dao');
 
 
 class App {
@@ -28,4 +30,5 @@ class App {
     }
 }
 
-App.start();
+// App.start();
+const dao = new DAO();
