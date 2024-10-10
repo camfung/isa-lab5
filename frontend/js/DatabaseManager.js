@@ -59,6 +59,7 @@ class DatabaseManager {
 			});
 			const result = await response.text();
 			document.getElementById("queryResponse").innerHTML = result;
+			snackbar.showSnackbar(messages.insertSuccessful, false)
 		} catch (error) {
 			snackbar.showSnackbar(messages.insertError, true)
 		}
@@ -79,8 +80,8 @@ class DatabaseManager {
 			const result = await response.json();
 			const table = this.generateTable(result);
 			document.getElementById("queryResponse").innerHTML = table;
+			snackbar.showSnackbar(messages.readSuccessful, false)
 		} catch (error) {
-
 			snackbar.showSnackbar(messages.readError, true)
 		}
 	}
