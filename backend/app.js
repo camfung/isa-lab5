@@ -1,4 +1,5 @@
 const fs = require('fs').promises;
+const path = require('path');
 const HttpServer = require('./modules/http-server');
 const LocalizationHelper = require("./helpers/localization.helper");
 require('dotenv').config();
@@ -7,7 +8,7 @@ const QueryValidator = require('./modules/query-validator');
 
 
 class App {
-    static patientDataFilePath = './data/patient-data.json';
+    static patientDataFilePath = path.join(__dirname, './data/patient-data.json');
 
     static start() {
         const app = new HttpServer();

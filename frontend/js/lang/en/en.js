@@ -3,6 +3,6 @@ const messages = {
 	naughtynaughty: "No operations allow except for SELECT and INSERT",
 	insertSuccessful: "Inserted Rows successfully",
 	insertError: "Error inserting data",
-	readError: "Error writing data",
+	readError: "Error reading data",
 	readSuccessful: "Fetched rows from the database"
 }

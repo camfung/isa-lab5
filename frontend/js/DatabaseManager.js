@@ -11,15 +11,7 @@ class DatabaseManager {
 				method: "POST",
 			});
 
-			let table;
-			if (response.status == 400) {
-				table = await response.text()
-			} else {
-				const result = await response.json();
-				table = this.generateTable(result);
-			}
-
-			document.getElementById("insertResponse").innerHTML = table;
+			document.getElementById("insertResponse").innerHTML = await response.text();
 			snackbar.showSnackbar(messages.insertSuccessful)
 		} catch (error) {
 			console.log(error)
@@ -87,28 +79,51 @@ class DatabaseManager {
 	}
 
 	generateTable(data) {
+		// Check if the data is able to be displayed in the table or empty
+		if (!Array.isArray(data)) {
+			return `Invalid data returned from database`;
+		} else if (data.length === 0) {
+			// NOTE: Currently hard coded for patient table
+			const emptyTable = `
+				<table class="table table-bordered table-striped table-hover">
+					<thead class="table-dark">
+						<tr>
+							<th>patientId</th>
+							<th>name</th>
+							<th>dateOfBirth</th>
+						</tr>
+					</thead>
+				</table>
+			`
+			return emptyTable;
+		}
+
+		const headers = Object.keys(data[0]);
+
 		// Create a table element
 		let table = '<table class="table table-bordered table-striped table-hover">';
 		table += `
                 <thead class="table-dark">
-                    <tr>
-			<th>Id</th>
-                        <th>Name</th>
-                        <th>Date of Birth</th>
-                    </tr>
+                    <tr>`
+
+		headers.forEach((header) => {
+			table += `<th>${header}</th>`;
+		});
+
+		table += `  </tr>
                 </thead>
                 <tbody>
             `;
 
 		// Loop through the data and create table rows
-		data.forEach((item, index) => {
-			table += `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${item.name}</td>
-                        <td>${item.dateOfBirth}</td>
-                    </tr>
-                `;
+		data.forEach((item) => {
+			table += `<tr>`;
+
+			headers.forEach((header) => {
+				table += `<td>${item[header]}</td>`;
+			});
+
+			table += '</tr>';
 		});
 
 		table += `
