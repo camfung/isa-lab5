@@ -60,24 +60,29 @@ class DatabaseManager {
 			const result = await response.text();
 			document.getElementById("queryResponse").innerHTML = result;
 		} catch (error) {
-			snackbar.showSnackbar(messages.)
+			snackbar.showSnackbar(messages.insertError, true)
 		}
 	}
 
 	async onRead(query) {
-		const urlObj = new URL(this.url + "query");
-		const params = new URLSearchParams();
-		params.append('query', query);
-		urlObj.search = params;
-		const requestUrl = urlObj.toString();
+		try {
+			const urlObj = new URL(this.url + "query");
+			const params = new URLSearchParams();
+			params.append('query', query);
+			urlObj.search = params;
+			const requestUrl = urlObj.toString();
 
-		const response = await fetch(requestUrl, {
-			method: "GET",
-		});
+			const response = await fetch(requestUrl, {
+				method: "GET",
+			});
 
-		const result = await response.json();
-		const table = this.generateTable(result);
-		document.getElementById("queryResponse").innerHTML = table;
+			const result = await response.json();
+			const table = this.generateTable(result);
+			document.getElementById("queryResponse").innerHTML = table;
+		} catch (error) {
+
+			snackbar.showSnackbar(messages.readError, true)
+		}
 	}
 
 	generateTable(data) {
