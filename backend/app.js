@@ -20,16 +20,16 @@ class App {
             const data = await this.loadJsonData(this.patientDataFilePath);
 
             try {
-                const queryResult = await dao.insert('patient', data);
-                const response = `Successfully inserted ${queryResult.affectedRows} records.`
-                res.status(201).send(response);
+                const result = await dao.insert('patient', data);
+                const message = `Successfully inserted ${result.affectedRows} records.`
+                res.status(201).send(message);
             } catch (e) {
-                const response = `Insert failed: ${e}`;
-                res.status(500).send(response);
+                const message = `Insert failed: ${e}`;
+                res.status(500).send(message);
             }
         });
 
-        app.get('/api/query', (req, res) => {
+        app.get('/api/query', async (req, res) => {
             const query = req.queryParams.query;
             const qv = new QueryValidator(query);
             qv.assertTable('patient').blockInsert().blockUpdate().blockDrop();
@@ -38,13 +38,38 @@ class App {
                 qv.validate();
             } catch (e) {
                 res.status(403).send(e.message);
+                return;
             }
 
-            res.send("<p>get req recieved</p>")
+            try {
+                const records = await dao.query(query);
+                res.status(200).json(records);
+            } catch (e) {
+                res.status(500).send(e.message);
+            }
         });
 
-        app.post('/api/query', (req, res) => {
-            res.send("<p>query post req recieved</p>")
+        app.post('/api/query', async (req, res) => {
+            const jsonBody = JSON.parse(req.body);
+            const query = jsonBody.query;
+            const qv = new QueryValidator(query);
+            qv.assertTable('patient').blockSelect().blockUpdate().blockDrop();
+
+            try {
+                qv.validate();
+            } catch (e) {
+                res.status(403).send(e.message);
+                return;
+            }
+
+            try {
+                const result = await dao.query(query);
+                const message = `Successfully inserted ${result.affectedRows} records.`
+                res.status(201).send(message);
+            } catch (e) {
+                const message = `Insert failed: ${e}`;
+                res.status(500).send(message);
+            }
         });
 
         app.listen(app.DEFAULT_PORT, () => {
