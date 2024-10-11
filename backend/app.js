@@ -25,22 +25,12 @@ class App {
                 const message = LocalizationHelper.getTranslation('Messages.successfullyInserted', [result.affectedRows]);
                 res.status(201).send(message);
             } catch (e) {
-                const message = LocalizationHelper.getTranslation('ErrorMessages.InsertFailed', [e]);
-                res.status(500).send(message);
+                res.status(500).send(e.message);
             }
         });
 
         app.get('/api/query', async (req, res) => {
             const query = req.queryParams.query;
-            const qv = new QueryValidator(query);
-            qv.assertTable('patient').blockInsert().blockUpdate().blockDrop();
-
-            try {
-                qv.validate();
-            } catch (e) {
-                res.status(403).send(e.message);
-                return;
-            }
 
             try {
                 const records = await dao.query(query);
@@ -59,8 +49,7 @@ class App {
                 const message = LocalizationHelper.getTranslation('Messages.successfullyInserted', [result.affectedRows]);
                 res.status(201).send(message);
             } catch (e) {
-                const message = LocalizationHelper.getTranslation('ErrorMessages.InsertFailed', [e]);
-                res.status(500).send(message);
+                res.status(500).send(e.message);
             }
         });
 

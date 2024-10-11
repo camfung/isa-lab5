@@ -2,8 +2,11 @@ const mysql = require('mysql2');
 
 class DAO {
     constructor() {
-        this.connectionStr = process.env.DB_CONNECTION_STRING;
-        this.connection = this._connectToServer();
+        this.rootConnStr = process.env.DB_CONNECTION_STRING_ROOT;
+        this.userConnStr = process.env.DB_CONNECTION_STRING_USER;
+
+        this._createPatientTableIfNotExist();
+        this.userConnection = this._connectToServerAsUser();
     }
 
     insert(tableName, data) {
@@ -24,20 +27,24 @@ class DAO {
     }
 
     query(sql) {
+        return this._query(this.userConnection, sql);
+    }
+
+    _query(connection, sql) {
         return new Promise((resolve, reject) => {
-            this.connection.query(sql, (err, results) => {
+            connection.query(sql, (err, results) => {
                 if (err) {
-                    reject(err); // Reject the promise if there's an error
+                    reject(err);
                 } else {
-                    resolve(results); // Resolve the promise with the results
+                    resolve(results);
                 }
             });
         });
     }
 
-    _connectToServer() {
+    _connectToServerAsUser() {
         // Create a connection using a connection string
-        const connection = mysql.createConnection(this.connectionStr);
+        const connection = mysql.createConnection(this.userConnStr);
 
         // Connect to the MySQL server
         connection.connect(async (err) => {
@@ -46,27 +53,34 @@ class DAO {
                 return;
             }
             console.log('Database connection successful. Connection ID: ' + connection.threadId);
-
-            try {
-                await this._createPatientTableIfNotExist();
-            } catch (e) {
-                console.error("Error creating table 'patient': " + e.message);
-            }
         });
 
         return connection;
     }
 
     async _createPatientTableIfNotExist() {
-        const createQuery = `
-            CREATE TABLE IF NOT EXISTS patient (
-                patientId   INT(11) AUTO_INCREMENT PRIMARY KEY,
-                name        VARCHAR(100) NOT NULL,
-                dateOfBirth DATETIME NOT NULL
-            ) ENGINE=InnoDB;
-        `;
+        const rootConnection = mysql.createConnection(this.rootConnStr);
 
-        return await this.query(createQuery);
+        rootConnection.connect((err) => {
+            if (err) {
+                console.error('Error connecting to mysql/lab5 database as root user: ' + err.stack);
+                return;
+            }
+        });
+
+        try {
+            const createQuery = `
+                    CREATE TABLE IF NOT EXISTS patient (
+                        patientId   INT(11) AUTO_INCREMENT PRIMARY KEY,
+                        name        VARCHAR(100) NOT NULL,
+                        dateOfBirth DATETIME NOT NULL
+                    ) ENGINE=InnoDB;
+                `;
+
+            await this._query(rootConnection, createQuery);
+        } catch (e) {
+            console.error("Error creating table 'patient': " + e.message);
+        }
     }
 
     _getInsertValuesFromJson(data) {
