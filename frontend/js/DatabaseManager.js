@@ -49,6 +49,12 @@ class DatabaseManager {
 				},
 				body: JSON.stringify(requestBody)
 			});
+
+			if (!response.ok) {
+				document.getElementById("queryResponse").innerHTML = await response.text();
+				return;
+			}
+
 			const result = await response.text();
 			document.getElementById("queryResponse").innerHTML = result;
 			snackbar.showSnackbar(messages.insertSuccessful, false)
@@ -68,6 +74,11 @@ class DatabaseManager {
 			const response = await fetch(requestUrl, {
 				method: "GET",
 			});
+
+			if (!response.ok) {
+				document.getElementById("queryResponse").innerHTML = await response.text();
+				return;
+			}
 
 			const result = await response.json();
 			const table = this.generateTable(result);
