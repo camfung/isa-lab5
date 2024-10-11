@@ -23,10 +23,10 @@ class DatabaseManager {
 		try {
 			const query = document.getElementById("sqlQuery").value;
 
-			if (query.toLowerCase().includes("insert")) {
-				await this.onInsert(query);
-			} else if (query.toLowerCase().includes("select")) {
+			if (query.toLowerCase().includes("select")) {
 				await this.onRead(query);
+			} else {
+				await this.onInsert(query);
 			}
 
 		} catch (error) {
