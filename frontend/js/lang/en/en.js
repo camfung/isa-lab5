@@ -13,5 +13,6 @@ const messages = {
 	insertSuccessful: "Inserted Rows successfully",
 	insertError: "Error inserting data",
 	readError: "Error reading data",
-	readSuccessful: "Fetched rows from the database"
+	readSuccessful: "Fetched rows from the database",
+	invalidDataReturned: "Invalid data returned from database."
 }
