@@ -53,8 +53,9 @@ class App {
             }
         });
 
-        app.listen(app.DEFAULT_PORT, () => {
-            console.log(`Server listening on port ${app.DEFAULT_PORT}`);
+        const port = process.env.PORT;
+        app.listen(port, () => {
+            console.log(`Server listening on port ${port}`);
         });
     }
 
