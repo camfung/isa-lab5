@@ -22,10 +22,10 @@ class App {
 
             try {
                 const result = await dao.insert('patient', data);
-                const message = `Successfully inserted ${result.affectedRows} records.`
+                const message = LocalizationHelper.getTranslation('Messages.successfullyInserted', [result.affectedRows]);
                 res.status(201).send(message);
             } catch (e) {
-                const message = `Insert failed: ${e}`;
+                const message = LocalizationHelper.getTranslation('ErrorMessages.InsertFailed', [e]);
                 res.status(500).send(message);
             }
         });
@@ -65,10 +65,10 @@ class App {
 
             try {
                 const result = await dao.query(query);
-                const message = `Successfully inserted ${result.affectedRows} records.`
+                const message = LocalizationHelper.getTranslation('Messages.successfullyInserted', [result.affectedRows]);
                 res.status(201).send(message);
             } catch (e) {
-                const message = `Insert failed: ${e}`;
+                const message = LocalizationHelper.getTranslation('ErrorMessages.InsertFailed', [e]);
                 res.status(500).send(message);
             }
         });

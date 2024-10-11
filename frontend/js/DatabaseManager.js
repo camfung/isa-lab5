@@ -81,7 +81,7 @@ class DatabaseManager {
 	generateTable(data) {
 		// Check if the data is able to be displayed in the table or empty
 		if (!Array.isArray(data)) {
-			return `Invalid data returned from database`;
+			return messages.invalidDataReturned;
 		} else if (data.length === 0) {
 			// NOTE: Currently hard coded for patient table
 			const emptyTable = `
