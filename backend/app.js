@@ -15,7 +15,7 @@ class App {
         const dao = new DAO();
 
         app.use(this.incrementRequestCount.bind(this));
-        app.cors(["http://127.0.0.1:8080"]);
+        app.cors(["https://api.coverai.site"]);
 
         app.post('/api/insertrecords', async (req, res) => {
             const data = await this.loadJsonData(this.patientDataFilePath);
