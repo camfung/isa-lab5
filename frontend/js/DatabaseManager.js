@@ -133,9 +133,17 @@ class DatabaseManager {
 		return table;
 	}
 }
-// Usage
-const dbManager = new DatabaseManager("http://localhost:3000/api/");
 
-// Example usage: Attach the event listeners to the form/buttons
-document.getElementById("insertForm").addEventListener("submit", (e) => dbManager.onInsertRecordSubmit(e));
-document.getElementById("queryForm").addEventListener("submit", (e) => dbManager.onQuerySubmit(e));
+const main = () => {
+	// Initialize front end string localization
+	LocalizationHelper.localizeElements();
+
+	// Init db manager
+	const dbManager = new DatabaseManager("http://localhost:3000/api/");
+
+	// Attach the event listeners to the form/buttons
+	document.getElementById("insertForm").addEventListener("submit", async (e) => dbManager.onInsertRecordSubmit(e));
+	document.getElementById("queryForm").addEventListener("submit", async (e) => dbManager.onQuerySubmit(e));
+}
+
+main()
