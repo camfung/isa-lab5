@@ -27,8 +27,6 @@ class DatabaseManager {
 				await this.onInsert(query);
 			} else if (query.toLowerCase().includes("select")) {
 				await this.onRead(query);
-			} else {
-				snackbar.showSnackbar(messages.naughtynaughty, true)
 			}
 
 		} catch (error) {
@@ -58,6 +56,7 @@ class DatabaseManager {
 			const result = await response.text();
 			document.getElementById("queryResponse").innerHTML = result;
 			snackbar.showSnackbar(messages.insertSuccessful, false)
+
 		} catch (error) {
 			snackbar.showSnackbar(messages.insertError, true)
 		}

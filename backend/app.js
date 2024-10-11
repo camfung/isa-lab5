@@ -53,15 +53,6 @@ class App {
         app.post('/api/query', async (req, res) => {
             const jsonBody = JSON.parse(req.body);
             const query = jsonBody.query;
-            const qv = new QueryValidator(query);
-            qv.assertTable('patient').blockSelect().blockUpdate().blockDrop();
-
-            try {
-                qv.validate();
-            } catch (e) {
-                res.status(403).send(e.message);
-                return;
-            }
 
             try {
                 const result = await dao.query(query);
