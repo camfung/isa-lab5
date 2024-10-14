@@ -6,7 +6,6 @@ class DAO {
         this.userConnStr = process.env.DB_CONNECTION_STRING_USER;
 
         this._createPatientTableIfNotExist();
-        this.userConnection = this._connectToServerAsUser();
     }
 
     insert(tableName, data) {
@@ -27,7 +26,8 @@ class DAO {
     }
 
     query(sql) {
-        return this._query(this.userConnection, sql);
+        const userConnection = this._getUserConnection();
+        return this._query(userConnection, sql);
     }
 
     _query(connection, sql) {
@@ -38,11 +38,18 @@ class DAO {
                 } else {
                     resolve(results);
                 }
+
+                connection.end((err) => {
+                    if (err) {
+                        console.error('Error ending connection: ' + err.stack);
+                    }
+                    console.log('Connection closed.');
+                })
             });
         });
     }
 
-    _connectToServerAsUser() {
+    _getUserConnection() {
         // Create a connection using a connection string
         const connection = mysql.createConnection(this.userConnStr);
 
